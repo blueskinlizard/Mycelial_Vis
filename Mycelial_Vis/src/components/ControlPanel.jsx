@@ -345,6 +345,7 @@ function SliderInput({ value, onChange, min, max, step }) {
         touchAction: 'none',
         width: '100%',
         height: '20px',
+        cursor: 'pointer',
       }}
     >
       <Slider.Track style={{
@@ -353,22 +354,30 @@ function SliderInput({ value, onChange, min, max, step }) {
         flexGrow: 1,
         borderRadius: '9999px',
         height: '4px',
+        width: '100%',
       }}>
         <Slider.Range style={{
           position: 'absolute',
           background: colorScheme.connections.active,
           borderRadius: '9999px',
           height: '100%',
+          left: 0,
         }} />
       </Slider.Track>
-      <Slider.Thumb style={{
-        display: 'block',
-        width: '16px',
-        height: '16px',
-        background: colorScheme.text,
-        borderRadius: '50%',
-        cursor: 'pointer',
-      }} />
+      <Slider.Thumb 
+        style={{
+          display: 'block',
+          width: '16px',
+          height: '16px',
+          background: colorScheme.text,
+          borderRadius: '50%',
+          cursor: 'grab',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+          transition: 'box-shadow 0.15s ease',
+        }}
+        onMouseDown={(e) => e.currentTarget.style.cursor = 'grabbing'}
+        onMouseUp={(e) => e.currentTarget.style.cursor = 'grab'}
+      />
     </Slider.Root>
   );
 }
@@ -377,32 +386,52 @@ function SwitchInput({ label, checked, onChange }) {
   const colorScheme = colorSchemes[useVisualizationStore(s => s.settings.colorScheme)];
   
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <div style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      gap: '10px',
+      height: '28px',
+    }}>
       <Switch.Root
         checked={checked}
         onCheckedChange={onChange}
         style={{
+          all: 'unset',
           width: '42px',
           height: '24px',
-          background: checked ? colorScheme.connections.active : colorScheme.gridColor,
+          backgroundColor: checked ? colorScheme.connections.active : colorScheme.gridColor,
           borderRadius: '9999px',
           position: 'relative',
           cursor: 'pointer',
+          WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
           border: 'none',
+          outline: 'none',
+          flexShrink: 0,
         }}
       >
         <Switch.Thumb style={{
           display: 'block',
           width: '18px',
           height: '18px',
-          background: colorScheme.text,
+          backgroundColor: colorScheme.text,
           borderRadius: '50%',
-          transition: 'transform 100ms',
-          transform: checked ? 'translateX(20px)' : 'translateX(3px)',
+          transition: 'transform 100ms ease',
+          transform: checked ? 'translateX(21px)' : 'translateX(3px)',
+          position: 'absolute',
+          top: '3px',
+          left: '0',
           willChange: 'transform',
         }} />
       </Switch.Root>
-      <label style={{ fontSize: '13px', cursor: 'pointer' }}>
+      <label 
+        style={{ 
+          fontSize: '13px', 
+          cursor: 'pointer',
+          userSelect: 'none',
+          lineHeight: '1',
+        }}
+        onClick={() => onChange(!checked)}
+      >
         {label}
       </label>
     </div>
