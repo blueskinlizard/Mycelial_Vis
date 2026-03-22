@@ -11,6 +11,48 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+[data-radix-slider-track] {
+  position: relative !important;
+  flex-grow: 1 !important;
+  width: 100% !important;
+}
+
+[data-radix-slider-range] {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+}
+
+[data-radix-slider-thumb] {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+[data-radix-slider-thumb]:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-radix-slider-thumb]:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4) !important;
+}
+
+[data-radix-slider-thumb]:active {
+  cursor: grabbing !important;
+}
+
+[data-radix-switch-root] {
+  all: unset !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+
+[data-radix-switch-thumb] {
+  will-change: transform !important;
+  box-sizing: border-box !important;
+}
+
 .tab-trigger {
   transition: all 0.2s ease;
 }
@@ -57,4 +99,16 @@ body {
 
 .pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+*:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
 }

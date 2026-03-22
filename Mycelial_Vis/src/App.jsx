@@ -10,15 +10,101 @@ import { colorSchemes } from '@lib/colorSchemes';
 import './App.css';
 
 function App() {
-  const [activeView, setActiveView] = useState('network'); // options are `'network' | 'learning' | 'ecosystem'
-  const [showControls, setShowControls] = useState(true);``
+  const [activeView, setActiveView] = useState('network');
+  const [showControls, setShowControls] = useState(true);
   const { settings, setNetworkData } = useVisualizationStore();
+  const { setTrainingData, setCurrentEpisode, setQTable } = useLearningStore();
+  const { setOrganisms, setPopulationHistory, setEnergyFlow } = useEcosystemStore();
   const colorScheme = colorSchemes[settings.colorScheme] || colorSchemes.neural;
   
   useEffect(() => {
-    // Here's where we would load the network
+    loadNetworkData();
+    loadLearningData();
+    loadEcosystemData();
   }, []);
   
+  const loadNetworkData = async () => {
+    try {
+      const response = await fetch('/network_data.json');
+      if (response.ok) {
+        const data = await response.json();
+        setNetworkData(data);
+        console.log('Loaded network from network_data.json');
+        return;
+      }
+    } catch (error) {
+      console.log('No network_data.json found, trying trained_network.json...');
+    }
+    
+    try {
+      const response = await fetch('/trained_network.json');
+      if (response.ok) {
+        const data = await response.json();
+        setNetworkData(data);
+        console.log('Loaded network from trained_network.json');
+        return;
+      }
+    } catch (error) {
+      console.log('No trained_network.json found, trying adaptive_network.json...');
+    }
+    
+    try {
+      const response = await fetch('/adaptive_network.json');
+      if (response.ok) {
+        const data = await response.json();
+        setNetworkData(data);
+        console.log('Loaded network from adaptive_network.json');
+        return;
+      }
+    } catch (error) {
+      console.log('No network data found. Run a demo script to generate data:');
+      console.log('  python generate_network_demo.py');
+      console.log('  python train_network_demo.py');
+      console.log('  python adaptive_network_demo.py');
+    }
+  };
+  
+  const loadLearningData = async () => {
+    try {
+      const response = await fetch('/learning_data.json');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.trainingData) {
+          setTrainingData(data.trainingData);
+        }
+        if (data.currentEpisode) {
+          setCurrentEpisode(data.currentEpisode);
+        }
+        if (data.qTable) {
+          setQTable(data.qTable);
+        }
+        console.log('Loaded learning data');
+      }
+    } catch (error) {
+      console.log('No learning data found');
+    }
+  };
+  
+  const loadEcosystemData = async () => {
+    try {
+      const response = await fetch('/ecosystem_data.json');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.organisms) {
+          setOrganisms(data.organisms);
+        }
+        if (data.populationHistory) {
+          setPopulationHistory(data.populationHistory);
+        }
+        if (data.energyFlow) {
+          setEnergyFlow(data.energyFlow);
+        }
+        console.log('Loaded ecosystem data');
+      }
+    } catch (error) {
+      console.log('No ecosystem data found');
+    }
+  };
   
   return (
     <div style={{
@@ -29,6 +115,7 @@ function App() {
       fontFamily: "'JetBrains Mono', 'Courier New', monospace",
       overflow: 'hidden',
     }}>
+      {/* Top Navigation */}
       <motion.div
         initial={{ y: -60 }}
         animate={{ y: 0 }}
@@ -103,15 +190,18 @@ function App() {
         </button>
       </motion.div>
       
+      {/* Main Content Area */}
       <div style={{
         marginTop: '60px',
         height: 'calc(100vh - 60px)',
         display: 'flex',
       }}>
+        {/* Control Panel */}
         <AnimatePresence>
           {showControls && activeView === 'network' && <ControlPanel />}
         </AnimatePresence>
         
+        {/* View Container */}
         <div style={{
           flex: 1,
           marginLeft: showControls && activeView === 'network' ? '320px' : '0',
